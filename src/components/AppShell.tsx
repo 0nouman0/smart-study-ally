@@ -35,9 +35,9 @@ export function AppShell({
             <span className="font-mono text-[10px] uppercase text-muted leading-none">Level {level ?? 1}</span>
             <span className="font-bold text-sm">{displayName ?? "Scholar"}</span>
           </div>
-          <div className="size-10 rounded-full bg-accent flex items-center justify-center font-bold text-sm">
+          <Link to="/profile" className="size-10 rounded-full bg-accent flex items-center justify-center font-bold text-sm hover:ring-2 ring-primary transition-all">
             {(displayName ?? "S").slice(0, 1).toUpperCase()}
-          </div>
+          </Link>
         </div>
       </nav>
 

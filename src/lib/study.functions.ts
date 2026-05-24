@@ -4,7 +4,20 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const ChatInput = z.object({
   message: z.string().min(1).max(4000),
+  sessionId: z.string().uuid().optional(),
 });
+
+export const listChatSessions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data } = await supabase
+      .from("chat_sessions")
+      .select("id, title, created_at, updated_at")
+      .eq("user_id", userId)
+      .order("updated_at", { ascending: false });
+    return { sessions: data ?? [] };
+  });
 
 export const askTutor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -12,11 +25,31 @@ export const askTutor = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
+    let sessionId = data.sessionId;
+    if (!sessionId) {
+      // Create a new session
+      const title = data.message.length > 40 ? data.message.slice(0, 40) + "..." : data.message;
+      const { data: newSession } = await supabase
+        .from("chat_sessions")
+        .insert({ user_id: userId, title })
+        .select("id")
+        .single();
+      sessionId = newSession?.id;
+    }
+
+    if (!sessionId) {
+      return { reply: "Could not create chat session.", error: true };
+    }
+
+    // Update the session's updated_at
+    await supabase.from("chat_sessions").update({ updated_at: new Date().toISOString() }).eq("id", sessionId);
+
     // pull last ~20 messages for context
     const { data: history } = await supabase
       .from("chat_messages")
       .select("role, content")
       .eq("user_id", userId)
+      .eq("session_id", sessionId)
       .order("created_at", { ascending: false })
       .limit(20);
 
@@ -30,10 +63,11 @@ export const askTutor = createServerFn({ method: "POST" })
       user_id: userId,
       role: "user",
       content: data.message,
+      session_id: sessionId,
     });
 
-    const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
-    if (!LOVABLE_API_KEY) {
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
+    if (!GROQ_API_KEY) {
       return { reply: "AI is not configured yet. Please contact support.", error: true };
     }
 
@@ -44,14 +78,14 @@ export const askTutor = createServerFn({ method: "POST" })
       "Never invent facts — say when you're unsure. Be warm but not childish.";
 
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GROQ_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
+          model: "llama-3.3-70b-versatile",
           messages: [
             { role: "system", content: systemPrompt },
             ...priorMessages,
@@ -80,9 +114,10 @@ export const askTutor = createServerFn({ method: "POST" })
         user_id: userId,
         role: "assistant",
         content: reply,
+        session_id: sessionId,
       });
 
-      return { reply, error: false };
+      return { reply, sessionId, error: false };
     } catch (e) {
       console.error("askTutor failed:", e);
       return { reply: "Network error reaching the tutor.", error: true };
@@ -91,15 +126,17 @@ export const askTutor = createServerFn({ method: "POST" })
 
 export const getChatHistory = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((input: unknown) => z.object({ sessionId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { data } = await supabase
+    const { data: messages } = await supabase
       .from("chat_messages")
       .select("id, role, content, created_at")
       .eq("user_id", userId)
+      .eq("session_id", data.sessionId)
       .order("created_at", { ascending: true })
       .limit(100);
-    return { messages: data ?? [] };
+    return { messages: messages ?? [] };
   });
 
 // ---------- Profile / XP ----------
