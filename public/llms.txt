@@ -1,0 +1,9 @@
+# Kinetic
+
+> AI study companion for students: tutor, planner, focus timer, and flashcards.
+
+Kinetic is a mobile-first study app that combines an AI tutor, smart planner, Pomodoro focus timer, and spaced-repetition flashcards in a focused editorial interface.
+
+## Pages
+- [Home](/): Landing page introducing the product and modules
+- [Sign in](/login): Account creation and login
