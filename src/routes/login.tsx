@@ -29,7 +29,8 @@ function LoginPage() {
     try {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
-          email, password,
+          email,
+          password,
           options: {
             data: { display_name: name || email.split("@")[0] },
             emailRedirectTo: window.location.origin + "/dashboard",
@@ -98,7 +99,9 @@ function LoginPage() {
 
           <div className="my-6 flex items-center gap-3">
             <div className="flex-1 h-px bg-foreground/10" />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-muted">or email</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
+              or email
+            </span>
             <div className="flex-1 h-px bg-foreground/10" />
           </div>
 
@@ -113,21 +116,25 @@ function LoginPage() {
               />
             )}
             <input
-              type="email" required
+              type="email"
+              required
               placeholder="you@school.edu"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-xl border border-foreground/10 bg-white px-4 py-3 text-sm focus:border-primary outline-none"
             />
             <input
-              type="password" required minLength={6}
+              type="password"
+              required
+              minLength={6}
               placeholder="Password (6+ chars)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-xl border border-foreground/10 bg-white px-4 py-3 text-sm focus:border-primary outline-none"
             />
             <button
-              type="submit" disabled={busy}
+              type="submit"
+              disabled={busy}
               className="w-full rounded-full bg-primary py-3 text-sm font-bold uppercase tracking-widest text-primary-foreground disabled:opacity-50"
             >
               {busy ? "..." : mode === "signin" ? "Sign in" : "Create account"}

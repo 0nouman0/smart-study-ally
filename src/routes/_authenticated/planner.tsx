@@ -4,7 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Check, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
-import { listTasks, createTask, toggleTask, deleteTask, getProfile, awardXp } from "@/lib/study.functions";
+import {
+  listTasks,
+  createTask,
+  toggleTask,
+  deleteTask,
+  getProfile,
+  awardXp,
+} from "@/lib/study.functions";
 
 export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({ meta: [{ title: "Planner — Kinetic" }] }),
@@ -25,9 +32,13 @@ function PlannerPage() {
   const [duration, setDuration] = useState(45);
 
   const create = useMutation({
-    mutationFn: () => createTask({ data: { title, subject: subject || null, priority, duration_minutes: duration } }),
+    mutationFn: () =>
+      createTask({
+        data: { title, subject: subject || null, priority, duration_minutes: duration },
+      }),
     onSuccess: () => {
-      setTitle(""); setSubject("");
+      setTitle("");
+      setSubject("");
       qc.invalidateQueries({ queryKey: ["tasks"] });
       toast.success("Task added");
     },
@@ -57,14 +68,21 @@ function PlannerPage() {
   const done = tasks.filter((t) => t.completed);
 
   return (
-    <AppShell level={profData?.profile.level} streak={profData?.profile.streak_days} displayName={profData?.profile.display_name}>
+    <AppShell
+      level={profData?.profile.level}
+      streak={profData?.profile.streak_days}
+      displayName={profData?.profile.display_name}
+    >
       <div className="mb-6">
         <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">Module 03</p>
         <h1 className="mt-2 text-4xl font-extrabold tracking-tighter">Planner</h1>
       </div>
 
       <form
-        onSubmit={(e) => { e.preventDefault(); if (title.trim()) create.mutate(); }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (title.trim()) create.mutate();
+        }}
         className="bg-accent rounded-2xl p-4 space-y-3 mb-8"
       >
         <input
@@ -81,7 +99,10 @@ function PlannerPage() {
             className="flex-1 bg-white border border-foreground/5 rounded-xl px-3 py-2 text-sm outline-none"
           />
           <input
-            type="number" min={5} max={300} step={5}
+            type="number"
+            min={5}
+            max={300}
+            step={5}
             value={duration}
             onChange={(e) => setDuration(Number(e.target.value))}
             className="w-20 bg-white border border-foreground/5 rounded-xl px-3 py-2 text-sm outline-none font-mono"
@@ -91,15 +112,22 @@ function PlannerPage() {
         <div className="flex gap-1">
           {PRIORITIES.map((p) => (
             <button
-              key={p} type="button" onClick={() => setPriority(p)}
+              key={p}
+              type="button"
+              onClick={() => setPriority(p)}
               className={`flex-1 px-2 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest ${
-                priority === p ? "bg-foreground text-background" : "bg-white text-muted border border-foreground/5"
+                priority === p
+                  ? "bg-foreground text-background"
+                  : "bg-white text-muted border border-foreground/5"
               }`}
-            >{p}</button>
+            >
+              {p}
+            </button>
           ))}
         </div>
         <button
-          type="submit" disabled={!title.trim() || create.isPending}
+          type="submit"
+          disabled={!title.trim() || create.isPending}
           className="w-full rounded-full bg-primary py-2.5 text-xs font-bold uppercase tracking-widest text-primary-foreground flex items-center justify-center gap-2 disabled:opacity-40"
         >
           <Plus className="size-3.5" /> Add task
@@ -112,7 +140,10 @@ function PlannerPage() {
         </h2>
         <div className="space-y-2">
           {open.map((t) => (
-            <div key={t.id} className="bg-white border border-foreground/5 rounded-xl p-3 flex items-center gap-3 group">
+            <div
+              key={t.id}
+              className="bg-white border border-foreground/5 rounded-xl p-3 flex items-center gap-3 group"
+            >
               <button
                 onClick={() => toggle.mutate({ id: t.id, completed: true })}
                 className="size-6 rounded-md border-2 border-foreground/20 hover:border-primary hover:bg-primary/10 shrink-0"
@@ -123,18 +154,27 @@ function PlannerPage() {
                   {t.subject || "General"} · {t.duration_minutes}m · {t.priority}
                 </p>
               </div>
-              <button onClick={() => remove.mutate(t.id)} className="text-muted hover:text-destructive opacity-0 group-hover:opacity-100">
+              <button
+                onClick={() => remove.mutate(t.id)}
+                className="text-muted hover:text-destructive opacity-0 group-hover:opacity-100"
+              >
                 <Trash2 className="size-4" />
               </button>
             </div>
           ))}
-          {open.length === 0 && <p className="text-sm text-muted text-center py-8">Nothing pending. Add a task above.</p>}
+          {open.length === 0 && (
+            <p className="text-sm text-muted text-center py-8">
+              Nothing pending. Add a task above.
+            </p>
+          )}
         </div>
       </section>
 
       {done.length > 0 && (
         <section className="mt-8">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold mb-3">Done · {done.length}</h2>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold mb-3">
+            Done · {done.length}
+          </h2>
           <div className="space-y-2">
             {done.slice(0, 10).map((t) => (
               <div key={t.id} className="bg-accent/40 rounded-xl p-3 flex items-center gap-3 group">
@@ -147,7 +187,10 @@ function PlannerPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm line-through text-muted truncate">{t.title}</p>
                 </div>
-                <button onClick={() => remove.mutate(t.id)} className="text-muted hover:text-destructive opacity-0 group-hover:opacity-100">
+                <button
+                  onClick={() => remove.mutate(t.id)}
+                  className="text-muted hover:text-destructive opacity-0 group-hover:opacity-100"
+                >
                   <Trash2 className="size-4" />
                 </button>
               </div>

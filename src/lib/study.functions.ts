@@ -42,7 +42,10 @@ export const askTutor = createServerFn({ method: "POST" })
     }
 
     // Update the session's updated_at
-    await supabase.from("chat_sessions").update({ updated_at: new Date().toISOString() }).eq("id", sessionId);
+    await supabase
+      .from("chat_sessions")
+      .update({ updated_at: new Date().toISOString() })
+      .eq("id", sessionId);
 
     // pull last ~20 messages for context
     const { data: history } = await supabase
@@ -98,7 +101,10 @@ export const askTutor = createServerFn({ method: "POST" })
         return { reply: "Rate limit hit. Please wait a moment and try again.", error: true };
       }
       if (res.status === 402) {
-        return { reply: "AI credits exhausted. Please add credits in your workspace.", error: true };
+        return {
+          reply: "AI credits exhausted. Please add credits in your workspace.",
+          error: true,
+        };
       }
       if (!res.ok) {
         const text = await res.text();
@@ -151,13 +157,21 @@ export const getProfile = createServerFn({ method: "GET" })
       .eq("id", userId)
       .maybeSingle();
     return {
-      profile: data ?? { display_name: null, xp: 0, level: 1, streak_days: 0, last_active_date: null },
+      profile: data ?? {
+        display_name: null,
+        xp: 0,
+        level: 1,
+        streak_days: 0,
+        last_active_date: null,
+      },
     };
   });
 
 export const awardXp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ amount: z.number().int().min(1).max(500) }).parse(input))
+  .inputValidator((input: unknown) =>
+    z.object({ amount: z.number().int().min(1).max(500) }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: prof } = await supabase
@@ -175,7 +189,13 @@ export const awardXp = createServerFn({ method: "POST" })
     }
     await supabase
       .from("profiles")
-      .update({ xp, level, streak_days: streak, last_active_date: today, updated_at: new Date().toISOString() })
+      .update({
+        xp,
+        level,
+        streak_days: streak,
+        last_active_date: today,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", userId);
     return { xp, level, streak };
   });
@@ -198,13 +218,15 @@ export const listTasks = createServerFn({ method: "GET" })
 export const createTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({
-      title: z.string().min(1).max(200),
-      subject: z.string().max(60).optional().nullable(),
-      priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
-      due_at: z.string().datetime().optional().nullable(),
-      duration_minutes: z.number().int().min(5).max(600).default(45),
-    }).parse(input),
+    z
+      .object({
+        title: z.string().min(1).max(200),
+        subject: z.string().max(60).optional().nullable(),
+        priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
+        due_at: z.string().datetime().optional().nullable(),
+        duration_minutes: z.number().int().min(5).max(600).default(45),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -266,11 +288,13 @@ export const listDueFlashcards = createServerFn({ method: "GET" })
 export const createFlashcard = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({
-      front: z.string().min(1).max(500),
-      back: z.string().min(1).max(2000),
-      subject: z.string().max(60).optional().nullable(),
-    }).parse(input),
+    z
+      .object({
+        front: z.string().min(1).max(500),
+        back: z.string().min(1).max(2000),
+        subject: z.string().max(60).optional().nullable(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -287,11 +311,13 @@ export const createFlashcard = createServerFn({ method: "POST" })
 export const reviewFlashcard = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({
-      id: z.string().uuid(),
-      // quality: 0 again, 1 hard, 2 good, 3 easy
-      quality: z.number().int().min(0).max(3),
-    }).parse(input),
+    z
+      .object({
+        id: z.string().uuid(),
+        // quality: 0 again, 1 hard, 2 good, 3 easy
+        quality: z.number().int().min(0).max(3),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -321,10 +347,13 @@ export const reviewFlashcard = createServerFn({ method: "POST" })
     await supabase
       .from("flashcards")
       .update({
-        ease, interval_days: interval, due_at: due,
+        ease,
+        interval_days: interval,
+        due_at: due,
         review_count: card.review_count + 1,
       })
-      .eq("id", data.id).eq("user_id", userId);
+      .eq("id", data.id)
+      .eq("user_id", userId);
     return { ok: true };
   });
 
@@ -333,10 +362,12 @@ export const reviewFlashcard = createServerFn({ method: "POST" })
 export const logFocusSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({
-      duration_minutes: z.number().int().min(1).max(180),
-      subject: z.string().max(60).optional().nullable(),
-    }).parse(input),
+    z
+      .object({
+        duration_minutes: z.number().int().min(1).max(180),
+        subject: z.string().max(60).optional().nullable(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;

@@ -38,7 +38,9 @@ function FocusPage() {
         return r - 1;
       });
     }, 1000);
-    return () => { if (ref.current) window.clearInterval(ref.current); };
+    return () => {
+      if (ref.current) window.clearInterval(ref.current);
+    };
   }, [running]);
 
   const handleComplete = async () => {
@@ -61,7 +63,11 @@ function FocusPage() {
   const pct = 1 - remaining / (minutes * 60);
 
   return (
-    <AppShell level={profData?.profile.level} streak={profData?.profile.streak_days} displayName={profData?.profile.display_name}>
+    <AppShell
+      level={profData?.profile.level}
+      streak={profData?.profile.streak_days}
+      displayName={profData?.profile.display_name}
+    >
       <div className="mb-6">
         <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">Module 02</p>
         <h1 className="mt-2 text-4xl font-extrabold tracking-tighter">Deep Focus</h1>
@@ -81,14 +87,31 @@ function FocusPage() {
           <div className="mt-8 flex flex-col items-center">
             <div className="relative size-48">
               <svg viewBox="0 0 100 100" className="-rotate-90 size-full">
-                <circle cx="50" cy="50" r="46" stroke="currentColor" strokeOpacity="0.15" strokeWidth="3" fill="none" />
-                <circle cx="50" cy="50" r="46" stroke="var(--primary)" strokeWidth="3" fill="none"
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="46"
+                  stroke="currentColor"
+                  strokeOpacity="0.15"
+                  strokeWidth="3"
+                  fill="none"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="46"
+                  stroke="var(--primary)"
+                  strokeWidth="3"
+                  fill="none"
                   strokeDasharray={`${2 * Math.PI * 46}`}
                   strokeDashoffset={`${2 * Math.PI * 46 * (1 - pct)}`}
-                  style={{ transition: "stroke-dashoffset 1s linear" }} />
+                  style={{ transition: "stroke-dashoffset 1s linear" }}
+                />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-5xl font-mono tracking-tighter font-medium">{mm}:{ss}</div>
+                <div className="text-5xl font-mono tracking-tighter font-medium">
+                  {mm}:{ss}
+                </div>
                 <p className="text-xs opacity-60 mt-1 font-mono uppercase tracking-widest">
                   {running ? "Stay sharp" : "Press start"}
                 </p>
@@ -101,7 +124,15 @@ function FocusPage() {
               onClick={() => setRunning((r) => !r)}
               className="py-3 rounded-full bg-background/10 border border-background/10 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2"
             >
-              {running ? <><Pause className="size-3.5" /> Pause</> : <><Play className="size-3.5" /> Start</>}
+              {running ? (
+                <>
+                  <Pause className="size-3.5" /> Pause
+                </>
+              ) : (
+                <>
+                  <Play className="size-3.5" /> Start
+                </>
+              )}
             </button>
             <button
               onClick={() => reset()}
@@ -115,7 +146,9 @@ function FocusPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold mb-3">Presets</h2>
+        <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold mb-3">
+          Presets
+        </h2>
         <div className="grid grid-cols-4 gap-2">
           {PRESETS.map((m) => (
             <button
@@ -133,8 +166,8 @@ function FocusPage() {
 
       <section className="mt-8 p-5 bg-accent/50 rounded-2xl">
         <p className="text-sm text-pretty leading-relaxed">
-          Earn <span className="font-bold text-primary">2 XP per minute</span> focused.
-          Complete the timer to lock in your session and grow your streak.
+          Earn <span className="font-bold text-primary">2 XP per minute</span> focused. Complete the
+          timer to lock in your session and grow your streak.
         </p>
       </section>
     </AppShell>

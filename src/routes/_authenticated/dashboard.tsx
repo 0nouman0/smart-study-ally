@@ -17,7 +17,13 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const MODULES: ReadonlyArray<{ to: "/tutor" | "/focus" | "/planner" | "/flashcards"; n: string; title: string; Icon: typeof Brain; dark?: boolean }> = [
+const MODULES: ReadonlyArray<{
+  to: "/tutor" | "/focus" | "/planner" | "/flashcards";
+  n: string;
+  title: string;
+  Icon: typeof Brain;
+  dark?: boolean;
+}> = [
   { to: "/tutor", n: "01", title: "Ask AI\nTutor", Icon: Brain, dark: true },
   { to: "/focus", n: "02", title: "Focus\nSession", Icon: Timer },
   { to: "/planner", n: "03", title: "Smart\nPlanner", Icon: ListTodo },
@@ -51,10 +57,12 @@ function Dashboard() {
         <div className="flex justify-between items-end mb-4">
           <div>
             <h1 className="text-4xl font-extrabold tracking-tighter leading-tight">
-              {greet},<br />{(p.display_name ?? "scholar").split(" ")[0]}.
+              {greet},<br />
+              {(p.display_name ?? "scholar").split(" ")[0]}.
             </h1>
             <p className="text-muted mt-2 text-pretty max-w-[28ch]">
-              You're on a <span className="text-primary font-bold">{p.streak_days}-day streak</span>. Keep the momentum.
+              You're on a <span className="text-primary font-bold">{p.streak_days}-day streak</span>
+              . Keep the momentum.
             </p>
           </div>
           <div className="text-right">
@@ -62,7 +70,9 @@ function Dashboard() {
             <div className="w-16 h-1 bg-foreground/5 mt-1 rounded-full overflow-hidden">
               <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
             </div>
-            <p className="text-[10px] font-mono uppercase text-muted mt-1">{xpToNext} XP to L{p.level + 1}</p>
+            <p className="text-[10px] font-mono uppercase text-muted mt-1">
+              {xpToNext} XP to L{p.level + 1}
+            </p>
           </div>
         </div>
       </section>
@@ -77,15 +87,19 @@ function Dashboard() {
             }`}
           >
             <div className="flex justify-between items-start">
-              <span className={`font-mono text-[10px] uppercase tracking-widest ${m.dark ? "opacity-60" : "text-muted"}`}>
+              <span
+                className={`font-mono text-[10px] uppercase tracking-widest ${m.dark ? "opacity-60" : "text-muted"}`}
+              >
                 Module {m.n}
               </span>
               <m.Icon className="size-4 opacity-60" />
             </div>
             <h3 className="text-xl font-bold leading-tight whitespace-pre-line">{m.title}</h3>
-            <div className={`size-8 rounded-full flex items-center justify-center self-end ${
-              m.dark ? "bg-primary" : "border border-foreground/10"
-            }`}>
+            <div
+              className={`size-8 rounded-full flex items-center justify-center self-end ${
+                m.dark ? "bg-primary" : "border border-foreground/10"
+              }`}
+            >
               <ArrowRight className="size-4" />
             </div>
           </Link>
@@ -94,8 +108,13 @@ function Dashboard() {
 
       <section className="space-y-4 mt-10 animate-reveal [animation-delay:200ms]">
         <div className="flex justify-between items-center">
-          <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold">Today's Plan</h2>
-          <Link to="/planner" className="text-[11px] font-bold underline decoration-primary underline-offset-4 uppercase">
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold">
+            Today's Plan
+          </h2>
+          <Link
+            to="/planner"
+            className="text-[11px] font-bold underline decoration-primary underline-offset-4 uppercase"
+          >
             View All
           </Link>
         </div>
@@ -107,15 +126,25 @@ function Dashboard() {
             </div>
           )}
           {pending.map((t) => (
-            <div key={t.id} className="p-4 bg-white border border-foreground/5 rounded-xl flex items-center gap-4">
+            <div
+              key={t.id}
+              className="p-4 bg-white border border-foreground/5 rounded-xl flex items-center gap-4"
+            >
               <div className="flex flex-col items-center">
                 <span className="font-mono text-xs font-bold">
-                  {t.due_at ? new Date(t.due_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}
+                  {t.due_at
+                    ? new Date(t.due_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "—"}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="font-bold text-sm leading-tight truncate">{t.title}</h4>
-                <p className="text-xs text-muted mt-1">{t.subject || "General"} · {t.duration_minutes}m</p>
+                <p className="text-xs text-muted mt-1">
+                  {t.subject || "General"} · {t.duration_minutes}m
+                </p>
               </div>
               {t.priority === "urgent" || t.priority === "high" ? (
                 <div className="px-2 py-1 bg-primary/10 rounded text-[10px] font-bold text-primary uppercase">

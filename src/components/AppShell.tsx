@@ -32,10 +32,15 @@ export function AppShell({
         </Link>
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-end">
-            <span className="font-mono text-[10px] uppercase text-muted leading-none">Level {level ?? 1}</span>
+            <span className="font-mono text-[10px] uppercase text-muted leading-none">
+              Level {level ?? 1}
+            </span>
             <span className="font-bold text-sm">{displayName ?? "Scholar"}</span>
           </div>
-          <Link to="/profile" className="size-10 rounded-full bg-accent flex items-center justify-center font-bold text-sm hover:ring-2 ring-primary transition-all">
+          <Link
+            to="/profile"
+            className="size-10 rounded-full bg-accent flex items-center justify-center font-bold text-sm hover:ring-2 ring-primary transition-all"
+          >
             {(displayName ?? "S").slice(0, 1).toUpperCase()}
           </Link>
         </div>
@@ -64,8 +69,13 @@ export function AppShell({
                   active ? "opacity-100" : "opacity-40 hover:opacity-70"
                 }`}
               >
-                <Icon className={`size-5 ${active ? "text-primary" : ""}`} strokeWidth={active ? 2.5 : 2} />
-                <span className="font-mono text-[9px] uppercase font-bold tracking-wider">{label}</span>
+                <Icon
+                  className={`size-5 ${active ? "text-primary" : ""}`}
+                  strokeWidth={active ? 2.5 : 2}
+                />
+                <span className="font-mono text-[9px] uppercase font-bold tracking-wider">
+                  {label}
+                </span>
               </Link>
             );
           })}

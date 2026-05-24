@@ -20,16 +20,23 @@ function AuthLayout() {
         setReady(true);
       }
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_e, session) => {
       if (!session) navigate({ to: "/login" });
     });
-    return () => { active = false; subscription.unsubscribe(); };
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">Loading…</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">
+          Loading…
+        </span>
       </div>
     );
   }

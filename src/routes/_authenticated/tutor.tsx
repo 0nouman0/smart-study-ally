@@ -22,18 +22,18 @@ const SUGGESTIONS = [
 function TutorPage() {
   const qc = useQueryClient();
   const { data: profData } = useQuery({ queryKey: ["profile"], queryFn: () => getProfile() });
-  
+
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  
-  const { data: sessionsData } = useQuery({ 
-    queryKey: ["chat_sessions"], 
-    queryFn: () => listChatSessions() 
+
+  const { data: sessionsData } = useQuery({
+    queryKey: ["chat_sessions"],
+    queryFn: () => listChatSessions(),
   });
-  
-  const { data: histData } = useQuery({ 
-    queryKey: ["chat", currentSessionId], 
+
+  const { data: histData } = useQuery({
+    queryKey: ["chat", currentSessionId],
     queryFn: () => getChatHistory({ data: { sessionId: currentSessionId! } }),
-    enabled: !!currentSessionId
+    enabled: !!currentSessionId,
   });
 
   const [draft, setDraft] = useState("");
@@ -43,12 +43,21 @@ function TutorPage() {
   const messages = histData?.messages ?? [];
 
   const send = useMutation({
-    mutationFn: (msg: string) => askTutor({ data: { message: msg, sessionId: currentSessionId ?? undefined } }),
+    mutationFn: (msg: string) =>
+      askTutor({ data: { message: msg, sessionId: currentSessionId ?? undefined } }),
     onMutate: async (msg) => {
       // optimistic
       if (currentSessionId) {
-        qc.setQueryData(["chat", currentSessionId], (old: any) => ({
-          messages: [...(old?.messages ?? []), { id: `tmp-${Date.now()}`, role: "user", content: msg, created_at: new Date().toISOString() }],
+        qc.setQueryData(["chat", currentSessionId], (old: { messages?: { id: string; role: string; content: string; created_at: string }[] } | undefined) => ({
+          messages: [
+            ...(old?.messages ?? []),
+            {
+              id: `tmp-${Date.now()}`,
+              role: "user",
+              content: msg,
+              created_at: new Date().toISOString(),
+            },
+          ],
         }));
       }
     },
@@ -83,13 +92,19 @@ function TutorPage() {
   };
 
   return (
-    <AppShell level={profData?.profile.level} streak={profData?.profile.streak_days} displayName={profData?.profile.display_name}>
+    <AppShell
+      level={profData?.profile.level}
+      streak={profData?.profile.streak_days}
+      displayName={profData?.profile.display_name}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Sparkles className="size-4 text-primary" />
-          <h1 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold">AI Tutor</h1>
+          <h1 className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold">
+            AI Tutor
+          </h1>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
@@ -98,9 +113,14 @@ function TutorPage() {
                 History
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[85vw] sm:w-[350px] p-0 border-r-0 flex flex-col">
+            <SheetContent
+              side="left"
+              className="w-[85vw] sm:w-[350px] p-0 border-r-0 flex flex-col"
+            >
               <SheetHeader className="p-6 border-b border-foreground/5 pb-4 text-left">
-                <SheetTitle className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold">Chat History</SheetTitle>
+                <SheetTitle className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted font-bold">
+                  Chat History
+                </SheetTitle>
               </SheetHeader>
               <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 <button
@@ -118,7 +138,7 @@ function TutorPage() {
                         setCurrentSessionId(session.id);
                         setSheetOpen(false);
                       }}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-colors ${currentSessionId === session.id ? 'bg-accent font-bold' : 'hover:bg-accent/50'}`}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-colors ${currentSessionId === session.id ? "bg-accent font-bold" : "hover:bg-accent/50"}`}
                     >
                       <MessageSquare className="size-4 opacity-50 shrink-0" />
                       <div className="truncate text-sm">{session.title}</div>
@@ -156,10 +176,16 @@ function TutorPage() {
 
         {messages.map((m) => (
           <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
-            <div className={`size-6 rounded-sm shrink-0 ${m.role === "user" ? "bg-primary" : "bg-foreground"}`} />
-            <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
-              m.role === "user" ? "bg-primary/10 text-foreground" : "bg-accent/50 border border-foreground/5"
-            }`}>
+            <div
+              className={`size-6 rounded-sm shrink-0 ${m.role === "user" ? "bg-primary" : "bg-foreground"}`}
+            />
+            <div
+              className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                m.role === "user"
+                  ? "bg-primary/10 text-foreground"
+                  : "bg-accent/50 border border-foreground/5"
+              }`}
+            >
               {m.content}
             </div>
           </div>
@@ -180,7 +206,10 @@ function TutorPage() {
       </div>
 
       <form
-        onSubmit={(e) => { e.preventDefault(); submit(); }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
         className="fixed bottom-20 inset-x-0 px-6 z-30"
       >
         <div className="max-w-md mx-auto flex gap-2 items-end bg-white border border-foreground/10 rounded-2xl p-2 shadow-lg">
@@ -188,7 +217,10 @@ function TutorPage() {
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submit();
+              }
             }}
             rows={1}
             placeholder="Ask anything…"

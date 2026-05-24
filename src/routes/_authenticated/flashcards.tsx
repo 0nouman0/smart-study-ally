@@ -5,8 +5,11 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import {
-  listDueFlashcards, createFlashcard, reviewFlashcard,
-  awardXp, getProfile,
+  listDueFlashcards,
+  createFlashcard,
+  reviewFlashcard,
+  awardXp,
+  getProfile,
 } from "@/lib/study.functions";
 
 export const Route = createFileRoute("/_authenticated/flashcards")({
@@ -42,7 +45,10 @@ function FlashcardsPage() {
   const create = useMutation({
     mutationFn: () => createFlashcard({ data: { front, back, subject: subject || null } }),
     onSuccess: () => {
-      setFront(""); setBack(""); setSubject(""); setShowAdd(false);
+      setFront("");
+      setBack("");
+      setSubject("");
+      setShowAdd(false);
       qc.invalidateQueries({ queryKey: ["flashcards"] });
       toast.success("Card added");
     },
@@ -63,7 +69,11 @@ function FlashcardsPage() {
   });
 
   return (
-    <AppShell level={profData?.profile.level} streak={profData?.profile.streak_days} displayName={profData?.profile.display_name}>
+    <AppShell
+      level={profData?.profile.level}
+      streak={profData?.profile.streak_days}
+      displayName={profData?.profile.display_name}
+    >
       <div className="mb-6 flex justify-between items-end">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">Module 04</p>
@@ -79,17 +89,37 @@ function FlashcardsPage() {
 
       {showAdd && (
         <form
-          onSubmit={(e) => { e.preventDefault(); if (front && back) create.mutate(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (front && back) create.mutate();
+          }}
           className="bg-accent rounded-2xl p-4 space-y-3 mb-6 animate-reveal"
         >
-          <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject (optional)"
-            className="w-full bg-white border border-foreground/5 rounded-xl px-3 py-2 text-sm outline-none" />
-          <textarea value={front} onChange={(e) => setFront(e.target.value)} placeholder="Front — the question"
-            rows={2} className="w-full bg-white border border-foreground/5 rounded-xl px-3 py-2 text-sm outline-none resize-none" />
-          <textarea value={back} onChange={(e) => setBack(e.target.value)} placeholder="Back — the answer"
-            rows={3} className="w-full bg-white border border-foreground/5 rounded-xl px-3 py-2 text-sm outline-none resize-none" />
-          <button type="submit" disabled={!front || !back || create.isPending}
-            className="w-full rounded-full bg-primary py-2.5 text-xs font-bold uppercase tracking-widest text-primary-foreground disabled:opacity-40">
+          <input
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="Subject (optional)"
+            className="w-full bg-white border border-foreground/5 rounded-xl px-3 py-2 text-sm outline-none"
+          />
+          <textarea
+            value={front}
+            onChange={(e) => setFront(e.target.value)}
+            placeholder="Front — the question"
+            rows={2}
+            className="w-full bg-white border border-foreground/5 rounded-xl px-3 py-2 text-sm outline-none resize-none"
+          />
+          <textarea
+            value={back}
+            onChange={(e) => setBack(e.target.value)}
+            placeholder="Back — the answer"
+            rows={3}
+            className="w-full bg-white border border-foreground/5 rounded-xl px-3 py-2 text-sm outline-none resize-none"
+          />
+          <button
+            type="submit"
+            disabled={!front || !back || create.isPending}
+            className="w-full rounded-full bg-primary py-2.5 text-xs font-bold uppercase tracking-widest text-primary-foreground disabled:opacity-40"
+          >
             Save card
           </button>
         </form>
