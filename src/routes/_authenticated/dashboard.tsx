@@ -17,12 +17,12 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const MODULES = [
+const MODULES: ReadonlyArray<{ to: "/tutor" | "/focus" | "/planner" | "/flashcards"; n: string; title: string; Icon: typeof Brain; dark?: boolean }> = [
   { to: "/tutor", n: "01", title: "Ask AI\nTutor", Icon: Brain, dark: true },
   { to: "/focus", n: "02", title: "Focus\nSession", Icon: Timer },
   { to: "/planner", n: "03", title: "Smart\nPlanner", Icon: ListTodo },
   { to: "/flashcards", n: "04", title: "Active\nRecall", Icon: Layers },
-] as const;
+];
 
 function Dashboard() {
   const navigate = useNavigate();
